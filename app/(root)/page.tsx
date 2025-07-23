@@ -1,32 +1,40 @@
 import InterviewCard from '@/components/InterviewCard';
 import { Button } from '@/components/ui/button';
-import { dummyInterviews } from '@/constants';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react'
+import React from 'react';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '../api/auth/[...nextauth]/route';
-import UserInfoBar from '@/components/UserInfoBar';
+import { getCurrentUser, getInterviewsByUserId, getLatestInterviews } from '@/lib/actions/auth.action';
 
 const page = async () => {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect('/sign-in');
   }
-  return (
-    <div className='max-w-5xl mx-auto'>
-      <section className='card-cta'>
 
+  const user = await getCurrentUser();
+  const userId = user?.id || '';
+
+  const [userInterviews, latestInterviews] = await Promise.all([
+    getInterviewsByUserId(userId),
+    getLatestInterviews({ userId })
+  ]);
+
+  const hasPastInterviews = userInterviews?.length > 0;
+  const hasUpcomingInterviews = latestInterviews?.length > 0;
+
+  return (
+    <div className='max-w-6xl mx-auto'>
+      <section className='card-cta'>
         <div className='flex flex-col gap-6 max-w-lg'>
           <h2>Get Interview ready with AI-Powered Practice & Feedback</h2>
           <p>Practice job interviews with AI, get personalized feedback, and improve your skills.</p>
           <Button className='btn' asChild>
             <Link href="/interview">Start an Interview</Link>
           </Button>
-
         </div>
-
         <Image
           src="/robot.png"
           alt="Hero Image"
@@ -34,33 +42,33 @@ const page = async () => {
           height={400}
           className='max-sm:hidden'
         />
-
       </section>
-
       <section className='flex flex-col gap-6 mt-8'>
         <h2>Your Interviews</h2>
-
         <div className='interviews-section'>
-          {dummyInterviews.map((interview) => (
-            <InterviewCard { ...interview} key={interview.id}/>
-          ))}
+          {hasPastInterviews ? (
+            userInterviews.map((interview: any) => (
+              <InterviewCard {...interview} key={interview.id} />
+            ))
+          ) : (
+            <p>You Haven&apos;t taken any interviews yet!</p>
+          )}
         </div>
-
-          <p>You Haven&apos;t taken any interviews yet!</p>
       </section>
-
       <section className='flex flex-col gap-6 mt-8'>
         <h2>Take an Interview</h2>
-
         <div className='interviews-section'>
-          {dummyInterviews.map((interview) => (
-            <InterviewCard { ...interview} key={interview.id}/>
-          ))}
-
+          {hasUpcomingInterviews ? (
+            latestInterviews.map((interview: any) => (
+              <InterviewCard {...interview} key={interview.id} />
+            ))
+          ) : (
+            <p>There are no new Interviews available</p>
+          )}
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
 export default page;
