@@ -100,7 +100,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
     <div className="card-border lg:min-w-[566px] min-h-[500px] max-h-[90vh] overflow-y-auto">
       <div className="flex flex-col gap-6 card py-14 px-10">
         <div className="flex flex-row gap-2 justify-center">
-          <Image src="/logo.svg" alt="logo" height={32} width={38} />
+          <Image src="/logo.png" alt="logo" height={38} width={60} />
           <h2 className="text-primary-100">InSight AI</h2>
         </div>
         <h3 className="text-center">Practice Job interview with AI</h3>
@@ -120,7 +120,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
               label="Email"
               placeholder="Your Email Address"
             />
-            {/* Password Field with Eye Icon */}
             <div className="relative">
               <input
                 className={`input w-full pr-10 ${!isSignIn && password && !allRequirementsMet ? 'border-red-500' : ''}`}
@@ -145,10 +144,9 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            {/* Password Requirements */}
             {!isSignIn && (
               <>
-                <ul className="mb-2 ml-2 space-y-1 text-sm">
+                <ul className="mb-6 -mt-4 ml-2 space-y-1 text-sm">
                   {passwordRequirements.map((req) => (
                     <li key={req.label} className="flex items-center gap-2 transition-colors">
                       <span className={req.test(password) ? 'text-green-500' : 'text-red-500'}>{req.test(password) ? '✔' : '✗'}</span>
@@ -156,7 +154,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
                     </li>
                   ))}
                 </ul>
-                {/* Confirm Password Field with Eye Icon */}
                 <div className="relative">
                   <input
                     className={`input w-full pr-10 ${confirmPassword && !passwordsMatch ? 'border-red-500' : ''}`}

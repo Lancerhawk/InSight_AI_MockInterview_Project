@@ -11,7 +11,11 @@ const monaSans = Mona_Sans({
 export const metadata: Metadata = {
   title: "Insight AI",
   description: "An AI powered tool for preparing for mock Interviews.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
+
 
 export default function RootLayout({
   children,

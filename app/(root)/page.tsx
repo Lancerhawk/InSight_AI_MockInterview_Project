@@ -6,7 +6,9 @@ import React from 'react';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '../api/auth/[...nextauth]/route';
-import { getCurrentUser, getInterviewsByUserId, getLatestInterviews } from '@/lib/actions/auth.action';
+import { getCurrentUser } from '@/lib/actions/auth.action';
+// import { getCurrentUser } from '@/lib/actions/auth.action';
+import { getInterviewsByUserId, getLatestInterviews, getFeedbacksByUserId } from '@/lib/actions/general.action';
 
 const page = async () => {
   const session = await getServerSession(authOptions);
@@ -17,9 +19,10 @@ const page = async () => {
   const user = await getCurrentUser();
   const userId = user?.id || '';
 
-  const [userInterviews, latestInterviews] = await Promise.all([
+  const [userInterviews, latestInterviews, feedbackMap] = await Promise.all([
     getInterviewsByUserId(userId),
-    getLatestInterviews({ userId })
+    getLatestInterviews({ userId }),
+    getFeedbacksByUserId(userId),
   ]);
 
   const hasPastInterviews = userInterviews?.length > 0;
@@ -48,7 +51,11 @@ const page = async () => {
         <div className='interviews-section'>
           {hasPastInterviews ? (
             userInterviews.map((interview: any) => (
-              <InterviewCard {...interview} key={interview.id} />
+              <InterviewCard
+                {...interview}
+                key={interview.id}
+                hasFeedback={!!feedbackMap[interview.id]}
+              />
             ))
           ) : (
             <p>You Haven&apos;t taken any interviews yet!</p>

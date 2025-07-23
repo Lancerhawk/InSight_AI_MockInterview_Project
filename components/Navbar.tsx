@@ -19,7 +19,7 @@ export default function Navbar() {
   return (
     <nav className={`sticky top-0 z-30 flex items-center justify-between w-full px-8 py-4 transition-colors duration-300 ${scrolled ? 'bg-[#18181b]/90 backdrop-blur shadow-lg' : ''} rounded-b-xl`}>
       <Link href="/" className='flex items-center gap-2'>
-        <Image src="/logo.svg" alt="Logo" width={38} height={32} />
+        <Image src="/logo.png" alt="Logo" width={38} height={32} />
         <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-primary-100">InSight AI</h2>
       </Link>
       {session && session.user && (
