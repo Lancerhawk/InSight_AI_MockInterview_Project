@@ -27,6 +27,11 @@
   --bg-pattern: url("/pattern.png");
 }
 
+::selection{
+  background-color: rgb(255, 249, 231);
+  color: black;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -331,4 +336,32 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #a18fff 0%, #ffb6b9 100%);
+  border-radius: 8px;
+  min-height: 40px;
+  border: 2px solid #23232b;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #8f7fff 0%, #ff8fa3 100%);
+}
+
+::-webkit-scrollbar-track {
+  background: #23232b;
+  border-radius: 8px;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a18fff #23232b;
 }

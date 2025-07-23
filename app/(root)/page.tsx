@@ -4,10 +4,18 @@ import { dummyInterviews } from '@/constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import UserInfoBar from '@/components/UserInfoBar';
 
-const page = () => {
+const page = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect('/sign-in');
+  }
   return (
-    <>
+    <div className='max-w-5xl mx-auto'>
       <section className='card-cta'>
 
         <div className='flex flex-col gap-6 max-w-lg'>
@@ -51,7 +59,7 @@ const page = () => {
 
         </div>
       </section>
-    </>
+    </div>
   )
 }
 

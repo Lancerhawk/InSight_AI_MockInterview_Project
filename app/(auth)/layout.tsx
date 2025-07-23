@@ -1,11 +1,13 @@
-import {ReactNode} from 'react'
+'use client';
+import { ReactNode } from 'react';
+import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 
-const Authlayout = ({children}: {children: ReactNode}) => {
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className='auth-layout'>
+    <SessionProviderWrapper>
+      <div className="auth-layout">
         {children}
-    </div>
-  )
+      </div>
+    </SessionProviderWrapper>
+  );
 }
-
-export default Authlayout;
