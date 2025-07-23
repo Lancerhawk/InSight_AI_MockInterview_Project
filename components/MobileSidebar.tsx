@@ -27,7 +27,7 @@ export default function MobileSidebar({ open, onClose, name }: { open: boolean, 
         <button className="absolute top-4 right-4 text-gray-400 hover:text-white" onClick={onClose} aria-label="Close sidebar">✕</button>
         <div className="flex flex-col items-center justify-center h-full gap-8">
           <div className="mt-8 mb-4">
-            <Image src="/logo.svg" alt="Logo" width={24} height={20} className="w-6 h-5" />
+            <Image src="/logo.png" alt="Logo" width={24} height={20} className="w-6 h-5" />
           </div>
           <span className="flex items-center gap-2 text-lg">
             Welcome,
