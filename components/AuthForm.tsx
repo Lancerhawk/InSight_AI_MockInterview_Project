@@ -23,17 +23,30 @@ const passwordRequirements = [
   { label: 'Four or more lowercase letters', test: (pw: string) => (pw.match(/[a-z]/g) || []).length >= 4 },
 ];
 
-const authFormSchema = (type: FormType) => {
-  return z.object({
-    name: type === 'sign-up' ? z.string().min(3) : z.string().optional(),
-    email: z.string().email(),
-    password: z.string().min(8).regex(/[A-Z]/, 'Must contain a capital letter').regex(/\d/, 'Must contain a number').refine((val) => (val.match(/[a-z]/g) || []).length >= 4, 'Must contain at least 4 lowercase letters'),
-    confirmPassword: type === 'sign-up' ? z.string() : z.string().optional(),
-  }).refine((data) => type !== 'sign-up' || data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-}
+const signUpSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+  password: z.string()
+    .min(8, 'At least 8 characters')
+    .regex(/[A-Z]/, 'Must contain a capital letter')
+    .regex(/\d/, 'Must contain a number')
+    .refine((val) => (val.match(/[a-z]/g) || []).length >= 4, 'Must contain at least 4 lowercase letters'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+});
+
+const signInSchema = z.object({
+  name: z.string().optional(),
+  email: z.string().email(),
+  password: z.string().min(1, 'Password is required'),
+  confirmPassword: z.string().optional(),
+});
+
+const authFormSchema = (type: FormType) => (type === 'sign-up' ? signUpSchema : signInSchema);
+
+const emailIsValid = (email: string) => /.+@.+\..+/.test(email);
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
@@ -43,6 +56,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,10 +71,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const isSignIn = type === 'sign-in';
   const passwordsMatch = password === confirmPassword;
   const allRequirementsMet = passwordRequirements.every((req) => req.test(password));
-  const canSubmit = isSignIn || (allRequirementsMet && passwordsMatch && !!password && !!confirmPassword);
+
+  const canSubmit = isSignIn
+    ? emailIsValid(form.watch('email')) && password.length >= 8
+    : (allRequirementsMet && passwordsMatch && !!password && !!confirmPassword);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
+    setSignInError(null);
     try {
       if (type === 'sign-up') {
         const res = await fetch('/api/auth/register', {
@@ -82,10 +100,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
           redirect: false,
         });
         if (res?.ok) {
-          toast.success('Signed in successfully!');
           router.push('/');
-        } else {
-          toast.error(res?.error || 'Invalid email or password.');
+          toast.success('Signed in successfully!');
+        } else if (res?.error) {
+          setSignInError('Invalid email or password.');
         }
       }
     } catch (error) {
@@ -106,6 +124,9 @@ const AuthForm = ({ type }: { type: FormType }) => {
         <h3 className="text-center">Practice Job interview with AI</h3>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form">
+            {isSignIn && signInError && (
+              <div className="text-red-500 text-center text-sm font-medium mb-2">{signInError}</div>
+            )}
             {!isSignIn && (
               <FormField
                 control={form.control}

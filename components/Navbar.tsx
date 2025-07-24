@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import UserInfoBar from './UserInfoBar';
-import MobileSidebar from './MobileSidebar';
+import PortalSidebar from './PortalSidebar';
 import { Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -28,9 +28,7 @@ export default function Navbar() {
           <button className="md:hidden p-2 rounded hover:bg-gray-700/30 transition-colors" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
             <Menu className="w-7 h-7 text-primary-100" />
           </button>
-          {sidebarOpen && (
-            <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} name={session.user.name ?? undefined} />
-          )}
+          <PortalSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} name={session.user.name ?? undefined} />
         </>
       )}
     </nav>

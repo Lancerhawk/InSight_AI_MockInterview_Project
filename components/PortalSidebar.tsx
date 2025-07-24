@@ -1,27 +1,27 @@
 'use client';
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { User } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 
-export default function MobileSidebar({ open, onClose, name }: { open: boolean, onClose: () => void, name?: string }) {
+export default function PortalSidebar({ open, onClose, name }: { open: boolean, onClose: () => void, name?: string }) {
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (open) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  return (
+  if (!open) return null;
+
+  return createPortal(
     <>
       <div
-        className={`fixed inset-0 z-40 bg-black bg-opacity-40 transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className="fixed inset-0 z-[9999] bg-black bg-opacity-40 transition-opacity duration-300 opacity-100 pointer-events-auto"
         onClick={onClose}
       />
       <aside
-        className={`fixed top-0 right-0 z-50 h-full w-64 bg-[#18181b] shadow-lg transform transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
+        className="fixed top-0 right-0 z-[9999] h-full w-64 bg-[#18181b] shadow-lg transform transition-transform duration-300 translate-x-0 opacity-100"
         aria-label="Sidebar"
       >
         <button className="absolute top-4 right-4 text-gray-400 hover:text-white" onClick={onClose} aria-label="Close sidebar">✕</button>
@@ -42,6 +42,7 @@ export default function MobileSidebar({ open, onClose, name }: { open: boolean, 
           </button>
         </div>
       </aside>
-    </>
+    </>,
+    document.body
   );
 } 
